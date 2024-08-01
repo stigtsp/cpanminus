@@ -1,0 +1,32 @@
+name: Main
+
+on: push
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install build deps
+        run: |
+          maint/setup-ci.sh
+          echo PERL5LIB=$(pwd)/local/lib/perl5 >> "$GITHUB_ENV"
+          echo PATH=$(pwd)/local/bin:$PATH >> "$GITHUB_ENV"
+      - name: Build
+        id: build
+        run: |
+          dzil build
+          echo "tarball=$(ls App-cpanminus-*.tar.gz)" >> "$GITHUB_OUTPUT"
+      - name: Test installing Mojolicious
+        run: |
+          ./cpanm Mojolicious
+          env PERL5LIB=$HOME/perl5/lib/perl5 perl -MMojolicious -E 'say $Mojolicious::VERSION'
+      - name: Release if tag
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            ${{ steps.build.outputs.tarball }}
+            cpanm
+            LICENSE

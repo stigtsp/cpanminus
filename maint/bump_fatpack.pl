@@ -7,10 +7,12 @@ sub find_version {
     my $file = shift;
 
     open my $fh, "<", $file or die $!;
-    while (<$fh>) {
-        /package App::cpanminus;our\$VERSION="(.*?)"/ and return $1;
-    }
-    return;
+    my $f = do { local undef $/; <$fh> };
+    close $fh;
+
+    $f=~m/package App::cpanminus;\n\s*our \$VERSION = "(.*?)"/;
+
+    return $1;
 }
 
 my $new_ver = shift @ARGV;
