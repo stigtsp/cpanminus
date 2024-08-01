@@ -13,6 +13,24 @@ App::cpanminus - get, unpack, build and install modules from CPAN
 
 Run C<cpanm -h> or C<perldoc cpanm> for more options.
 
+=head1 PATCH NOTICE
+
+This version of cpanminus includes the following patches differing from upstream:
+
+=over 4
+
+=item *
+
+Use https sources instead of http to be secure by detault
+
+=item *
+
+Includes a fatpacked version of HTTP::Tiny that resolves certificates via the
+default_ca() method in IO::Socket::SSL
+
+=back
+
+
 =head1 DESCRIPTION
 
 cpanminus is a script to get, unpack, build and install modules from
